@@ -2,14 +2,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/userRoutes');
 const thoughtRoutes = require('./routes/thoughtRoutes');
-const { User, Thought } = require('./models');
+const User = require('./models/userModel');
+const Thought = require('./models/thoughtModel');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost/socialnetworkdb', {
+mongoose.connect('', {
   useFindAndModify: false,
   useNewUrlParser: true,
   useUnifiedTopology: true,
