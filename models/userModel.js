@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const { Schema } = mongoose;
 
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
   username: {
     type: String,
     unique: true,
@@ -12,17 +11,23 @@ const userSchema = new Schema({
     type: String,
     required: true,
     unique: true,
+    trim: true,
     match: [/.+@.+\..+/, 'Please enter a valid email address'],
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6,
   },
   thoughts: [
     {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Thought',
     },
   ],
   friends: [
     {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
   ],

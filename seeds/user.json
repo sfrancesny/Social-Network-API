@@ -1,0 +1,31 @@
+
+[
+  {
+    "username": "user1",
+    "email": "user1@example.com",
+    "password": "password1",
+    "thoughts": [],
+    "friends": []
+  },
+  {
+    "username": "soniafrances",
+    "email": "sfrances@example.com",
+    "password": "BKCFPV81",
+    "thoughts": [],
+    "friends": []
+  },
+  {
+    "username": "kemmackey",
+    "email": "kemmack@example.com",
+    "password": "pass123",
+    "thoughts": [],
+    "friends": []
+  },
+  {
+    "username": "samson123",
+    "email": "samnyen@example.com",
+    "password": "code123",
+    "thoughts": [],
+    "friends": []
+  }
+]

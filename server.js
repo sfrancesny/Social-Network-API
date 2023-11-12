@@ -2,19 +2,23 @@ const express = require('express');
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/userRoutes');
 const thoughtRoutes = require('./routes/thoughtRoutes');
-const User = require('./models/userModel');
-const Thought = require('./models/thoughtModel');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017', {
+mongoose.connect('mongodb://127.0.0.1:27017/social-network', {
   useFindAndModify: false,
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
+})
+  .then(() => {
+    console.log('Connected successfully to MongoDB');
+  })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
+  });
 
 app.use('/api/users', userRoutes);
 app.use('/api/thoughts', thoughtRoutes);
