@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
-mongoose.connect('', {
+mongoose.connect('mongodb://localhost:27017', {
   useFindAndModify: false,
   useNewUrlParser: true,
   useUnifiedTopology: true,
