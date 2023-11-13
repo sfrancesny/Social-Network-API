@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/userModel');
 const Thought = require('../models/thoughtModel');
+const Reaction = require('../models/reactionModel');
 
 router.get('/', async (req, res) => {
   // GET all thoughts
@@ -49,47 +50,85 @@ router.post('/', async (req, res) => {
   }
 });
 
-// POST to create a reaction
+// POST (create reaction)
 router.post('/:thoughtId/reactions', async (req, res) => {
   const { thoughtId } = req.params;
-  const { reactionBody, username } = req.body;
 
   try {
-    const thought = await Thought.findById(thoughtId);
-    if (!thought) {
+    // Find the user by username
+    const user = await User.findOne({ username: req.body.user });
+
+    // Check if the user exists
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Create a new Reaction with the user's ObjectId
+    const newReaction = new Reaction({
+      emoji: req.body.emoji,
+      user: user._id,
+      reactionText: req.body.reactionText,
+      timestamp: req.body.timestamp,
+    });
+
+    // Find the thought by ID and push the new reaction
+    const updatedThought = await Thought.findByIdAndUpdate(
+      thoughtId,
+      { $push: { reactions: newReaction } },
+      { new: true }
+    );
+
+    // Check if the thought exists
+    if (!updatedThought) {
       return res.status(404).json({ message: 'Thought not found' });
     }
 
-    // Create a reaction
-    thought.reactions.push({ reactionBody, username });
-    await thought.save();
-
-    res.json(thought);
+    res.status(201).json(newReaction);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// DELETE to remove a thought by its _id
-router.delete('/:thoughtId', async (req, res) => {
+// PUT to update a thought by its _id
+router.put('/:thoughtId', async (req, res) => {
   const { thoughtId } = req.params;
+  const { thoughtText } = req.body;
 
   try {
-    const thought = await Thought.findById(thoughtId);
-    if (!thought) {
+    const updatedThought = await Thought.findByIdAndUpdate(
+      thoughtId,
+      { thoughtText },
+      { new: true }
+    );
+
+    if (!updatedThought) {
       return res.status(404).json({ message: 'Thought not found' });
     }
 
-    // Remove associated reactions
-    await thought.reactions.forEach(async (reaction) => {
-      await thought.reactions.id(reaction._id).remove();
-    });
+    res.json(updatedThought);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
-    // Remove thought
-    await thought.remove();
+// DELETE (remove reaction)
+router.delete('/:thoughtId/reactions/:reactionId', async (req, res) => {
+  const { thoughtId, reactionId } = req.params;
 
-    res.json({ message: 'Thought and associated reactions removed' });
+  try {
+    const updatedThought = await Thought.findByIdAndUpdate(
+      thoughtId,
+      { $pull: { reactions: reactionId } },
+      { new: true }
+    );
+
+    if (!updatedThought) {
+      return res.status(404).json({ message: 'Thought not found' });
+    }
+
+    res.json({ message: 'Reaction removed successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });

@@ -1,0 +1,21 @@
+[
+    {
+      "emoji": "😄",
+      "user": "kemmackey",
+      "reactionText": "This is a happy reaction!", 
+      "timestamp": "2023-01-01T12:34:56.789Z"
+    },
+    {
+      "emoji": "👍",
+      "user": "soniafrances", 
+      "reactionText": "Thumbs up!",
+      "timestamp": "2023-01-02T08:45:00.000Z"
+    },
+    {
+      "emoji": "❤️",
+      "user": "samson123",
+      "reactionText": "Sending love!",
+      "timestamp": "2023-01-03T15:20:30.500Z"
+    }
+  ]
+  

@@ -9,7 +9,6 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 
 mongoose.connect('mongodb://127.0.0.1:27017/social-network', {
-  useFindAndModify: false,
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })

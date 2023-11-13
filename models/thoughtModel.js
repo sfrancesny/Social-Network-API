@@ -37,7 +37,10 @@ const thoughtSchema = new Schema({
     type: String,
     required: true,
   },
-  reactions: [reactionSchema],
+  reactions: [
+    { type: mongoose.Schema.Types.ObjectId, 
+      ref: 'Reaction' 
+    }],
 });
 
 // Create virtual for reactionCount

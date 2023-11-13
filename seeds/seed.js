@@ -1,9 +1,13 @@
 // seed.js
+// imports the neccessary modules
 const mongoose = require('mongoose');
 const User = require('../models/userModel');
 const Thought = require('../models/thoughtModel');
+const Reaction = require('../models/reactionModel');
+const Friendship = require('../models/friendshipModel'); 
 const userData = require('./user.json');
 const thoughtData = require('./thought.json');
+const reactionData = require('./reactions.json');
 
 const seedDatabase = async () => {
   try {
@@ -14,9 +18,11 @@ const seedDatabase = async () => {
     });
     console.log('Connected successfully to MongoDB');
 
-    // Clear existing users and thoughts
+    // Clear existing users, thoughts, reactions, and friendships
     await User.deleteMany({});
     await Thought.deleteMany({});
+    await Reaction.deleteMany({});
+    await Friendship.deleteMany({});  // Clear friendships
 
     // Seed the users
     const insertedUsers = await User.insertMany(userData);
@@ -38,7 +44,29 @@ const seedDatabase = async () => {
     const insertedThoughts = await Thought.insertMany(preparedThoughts);
     console.log('Thoughts successfully added!');
 
-    // When seeding is done, log the users and thoughts
+    // Seed the reactions
+    const preparedReactions = reactionData.map(reaction => {
+      const user = insertedUsers.find(u => u.username === reaction.user);
+      if (!user) {
+        throw new Error(`User not found for the reaction: ${reaction.reactionText}`);
+      }
+      return { ...reaction, user: user._id };
+    });
+
+    // Seed the reactions with updated user IDs
+    const insertedReactions = await Reaction.insertMany(preparedReactions);
+    console.log('Reactions successfully added!');
+
+    // Seed friendships
+    const friendships = [
+      { user: insertedUsers[0]._id, friend: insertedUsers[1]._id },
+      { user: insertedUsers[0]._id, friend: insertedUsers[2]._id },
+    ];
+
+    await Friendship.insertMany(friendships);
+    console.log('Friendships successfully added!');
+
+    // When seeding is done, log the users, thoughts, reactions, and friendships
     const users = await User.find();
     users.forEach(user => {
       console.log(`User: ${user.username}, ID: ${user._id}`);
@@ -49,7 +77,17 @@ const seedDatabase = async () => {
       console.log(`Thought: ${thought.thoughtText}, ID: ${thought._id}`);
     });
 
-    console.log('Database seeded with users and thoughts!');
+    const reactions = await Reaction.find();
+    reactions.forEach(reaction => {
+      console.log(`Reaction: ${reaction.comment}, ID: ${reaction._id}`);
+    });
+
+    const friendRelations = await Friendship.find();
+    friendRelations.forEach(friendship => {
+      console.log(`Friendship: User ${friendship.user} is friends with ${friendship.friend}`);
+    });
+
+    console.log('Database seeded with users, thoughts, reactions, and friendships!');
   } catch (error) {
     console.error('Error seeding database:', error);
   } finally {
